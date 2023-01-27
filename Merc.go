@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/hex"
-	//_ "encoding/hex"
 	"io"
 )
 import "fmt"
@@ -23,30 +21,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//buf := make([]byte, 1024)
-	//	02 CA A7 93 2F FE D7                               .К§“/юЧ
-
-	buf := []byte{0x02, 0xCA, 0xA7, 0x93, 0x63, 0xFF, 0x22}
-
 	int_value := 46835603
-	hex_value := fmt.Sprintf("%X", int_value)
-	fmt.Printf("Hex value of %d is = %s\n", int_value, hex_value)
-	bs := make([]byte, 8)
-	binary.AppendVarint(bs, 46835603)
-	fmt.Println("Tx: ", bs)
+	hex_value := fmt.Sprintf("%08x", int_value)
+	fmt.Printf("Decimal: %d,\n Hexa: %s", int_value, hex_value)
+	hex_value1, err := hex.DecodeString(hex_value)
+	fmt.Println(hex_value1)
+	if err != nil {
+		panic(err)
+	}
+	hex_value1 = append(hex_value1, 0x61)
+	//crc16(hex_value1)
 
-	//crc16(buf)
-	//for {
-	_, err = stream.Write(crc16(buf))
+	_, err = stream.Write(crc16(hex_value1))
 	if err != nil {
 		log.Fatal(err)
 	}
-	//	s := string(buf[:n])
-	fmt.Println("Tx: ", hex.EncodeToString(crc16(buf)))
 
-	//}
-	//buf1 := make([]byte, 1024)
-	var st string
+	fmt.Println("Tx: ", hex.EncodeToString(crc16(hex_value1)))
+
+	var st []byte
 	for i := 0; i < 100; i++ {
 		buf := make([]byte, 1024)
 		n, err := stream.Read(buf)
@@ -58,11 +51,12 @@ func main() {
 
 			//	buf = buf[:n]
 			if n > 0 {
-				fmt.Println("Rx: ", hex.EncodeToString(buf[:n]))
-				st = st + hex.EncodeToString(buf[:n])
+				//	fmt.Println("Rx: ", hex.EncodeToString(buf[:n]))
+				//	st = st + hex.EncodeToString(buf[:n])
+				st = append(st, buf[:n]...)
 			}
 
 		}
 	}
-	fmt.Println("Rx: ", st)
+	fmt.Println("Rx: ", hex.EncodeToString(st))
 }
