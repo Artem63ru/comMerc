@@ -21,6 +21,11 @@ func convert(x int, y int, divider int, arr []byte) float32 {
 	}
 }
 
+// Функция опроса устройства
+// сн - серийник в инте
+// указатель на порт
+// номер команды
+// возвращает массив из Тх
 func send_to(s_n int, stream serial.Port, comm byte) []byte {
 	hex_value := fmt.Sprintf("%08x", s_n)
 	fmt.Printf("Decimal: %d,\n Hexa: %s", s_n, hex_value)
@@ -67,36 +72,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	int_value := 46835603
-	//hex_value := fmt.Sprintf("%08x", int_value)
-	//fmt.Printf("Decimal: %d,\n Hexa: %s", int_value, hex_value)
-	//hex_value1, err := hex.DecodeString(hex_value)
-	//fmt.Println(hex_value1)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//hex_value1 = append(hex_value1, 0x63)
-	//_, err = stream.Write(crc16(hex_value1))
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Println("Tx: ", hex.EncodeToString(crc16(hex_value1)))
-	//var v float32
-	//var st []byte
-	//for i := 0; i < 100; i++ {
-	//	buf := make([]byte, 1024)
-	//	n, err := stream.Read(buf)
-	//	if err != nil {
-	//		if err != io.EOF {
-	//			fmt.Println("Error reading from serial port: ", err)
-	//		}
-	//	} else {
-	//		if n > 0 {
-	//			st = append(st, buf[:n]...)
-	//		}
-	//
-	//	}
-	//}
+	int_value := 46835603 // серийный номер Меркурия
+	// отправка запроса по 63 функции
 	st := send_to(int_value, *stream, 0x63)
 	fmt.Println("Rx: ", hex.EncodeToString(st))
 	st1 := crc16(st[:len(st)-2])
