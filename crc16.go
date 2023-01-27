@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 )
 
 var MbTable = []uint16{
@@ -60,17 +59,17 @@ func crc16(in_buf []byte) []byte {
 
 	checksum := CheckSum(m_data)
 
-	fmt.Printf("check sum:%X \n", checksum)
+	//fmt.Printf("check sum:%X \n", checksum)
 
 	int16buf := new(bytes.Buffer)
 
 	binary.Write(int16buf, binary.LittleEndian, checksum)
-	fmt.Printf("write buf is: %+X \n", int16buf.Bytes())
-
-	fmt.Printf("output-before:%X \n", m_data)
+	//fmt.Printf("write buf is: %+X \n", int16buf.Bytes())
+	//
+	//fmt.Printf("output-before:%X \n", m_data)
 	m_data = append(m_data, int16buf.Bytes()...)
 	out = m_data
-	fmt.Printf("output-after:%X \n", m_data)
+	//fmt.Printf("output-after:%X \n", m_data)
 
 	return out
 }
