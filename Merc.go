@@ -10,7 +10,7 @@ import "log"
 import "github.com/tarm/serial"
 
 func convert(x int, y int, divider int, arr []byte) float32 {
-	largeArray := make([]byte, 2)
+	largeArray := make([]byte, y-x)
 	copy(largeArray, arr[x:y])
 	i, err := strconv.Atoi(hex.EncodeToString(largeArray))
 	if err != nil {
@@ -80,12 +80,31 @@ func main() {
 	if hex.EncodeToString(st[len(st)-2:]) == hex.EncodeToString(st1[len(st1)-2:]) {
 		fmt.Println("crc ОК")
 		if st[4] == 99 {
-			v = convert(5, 8, 10, st)
-			i := convert(9, 10, 100, st)
-			p := convert(11, 13, 1000, st)
+			v = convert(5, 7, 10, st)
+			i := convert(7, 9, 100, st)
+			p := convert(9, 11, 1000, st)
 			fmt.Println("Напряжение", v)
 			fmt.Println("Ток", i)
 			fmt.Println("Мощность", p)
+		} else {
+			fmt.Println("Не тот ответ")
+		}
+
+	}
+	st = send_to(int_value, *stream, 0x27)
+	fmt.Println("Rx: ", hex.EncodeToString(st))
+	st1 = crc16(st[:len(st)-2])
+	if hex.EncodeToString(st[len(st)-2:]) == hex.EncodeToString(st1[len(st1)-2:]) {
+		fmt.Println("crc ОК")
+		if st[4] == 39 {
+			v = convert(5, 9, 100, st)
+			i := convert(9, 13, 100, st)
+			p := convert(13, 17, 100, st)
+			t := convert(17, 21, 100, st)
+			fmt.Println("T1", v)
+			fmt.Println("T2", i)
+			fmt.Println("T3", p)
+			fmt.Println("T4", t)
 		} else {
 			fmt.Println("Не тот ответ")
 		}
